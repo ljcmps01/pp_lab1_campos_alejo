@@ -1,3 +1,10 @@
+#Punto 2 y 3: estan las funciones de string hechas, 
+## Punto 2: falta hacer el submenu para elegir el jugador (listar con mostrar_jugadores, pedir al usuario elegir indice, e imprimir
+# sus estadisticas)
+#
+## Punto 3: falta la funcion de guardado de CSV (usar guardar_archivo y generar_CSV), la funcion debe autogenerar el nombre de archivo
+
+
 import json
 import re
 import os
@@ -132,12 +139,31 @@ def mostrar_todos_nombre_dato(lista_jugadores:list,dato:str, enumerar = False)->
     
     return success
 
-def generar_CSV_jugador(jugador:dict):
+def obtener_nombre_estadisticas_jugador(jugador:dict):
+    lista_estadisticas = ["{0}: {1}".format(capitalizar_palabras(estadistica),jugador["estadisticas"][estadistica]) for estadistica in jugador["estadisticas"]]
+    str_jugador = "{0}\n{1}".format(obtener_nombre_capitalizado(jugador),"\n".join(lista_estadisticas))
+
+    return str_jugador
+        
+
+def generar_CSV_jugador(jugador:dict)->str:
+    """genera un string con las estadisticas del jugador
+
+    Args:
+        jugador (dict): jugador a generar
+
+    Returns:
+        str: string con el contenido del diccionario con formato CSV
+    """
     lista_keys = list(jugador.keys())
-    lista_keys.remove("")
-    lista_keys.append(list(jugador["estadisticas"].keys()))
-    lista_values = [jugador["nombre"]]
-    lista_values.append([str(estadistica) for estadistica in jugador["estadisticas"].values()])
+    lista_keys.remove("estadisticas")
+    lista_keys.remove("logros")
+
+    lista_values = [valores for valores in lista_keys]
+
+    lista_keys.extend(list(jugador["estadisticas"].keys()))
+    lista_values.extend([str(estadistica) for estadistica in jugador["estadisticas"].values()])
+
     str_keys = ",".join(lista_keys)
     str_values = ",".join(lista_values)
 
@@ -147,6 +173,9 @@ def generar_CSV_jugador(jugador:dict):
 
 lista_jugadores = leer_json("dt.json","jugadores")
 
-print(mostrar_todos_nombre_dato(lista_jugadores, "posicion",True))
+# print(mostrar_todos_nombre_dato(lista_jugadores, "posicion",True))
 
-print(generar_CSV_jugador(lista_jugadores[2]))
+print(obtener_nombre_estadisticas_jugador(lista_jugadores[2]))
+
+# print(generar_CSV_jugador(lista_jugadores[2]))
+
