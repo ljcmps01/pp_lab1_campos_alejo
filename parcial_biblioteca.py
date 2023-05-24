@@ -1,8 +1,10 @@
 #Punto 2 y 3: estan las funciones de string hechas, 
-## Punto 2: falta hacer el submenu para elegir el jugador (listar con mostrar_jugadores, pedir al usuario elegir indice, e imprimir
+## Punto 2: (HECHO)falta hacer el submenu para elegir el jugador (listar con mostrar_jugadores, pedir al usuario elegir indice, e imprimir
 # sus estadisticas)
 #
 ## Punto 3: falta la funcion de guardado de CSV (usar guardar_archivo y generar_CSV), la funcion debe autogenerar el nombre de archivo
+#
+# Integrar punto 3 en punto 2? preguntar luego de imprimir en el 2, si desea guardar en CSV
 
 
 import json
@@ -109,7 +111,7 @@ def obtener_nombre_y_dato(jugador:dict,dato:str)->str:
     
     return nombre_dato_jugador
 
-def mostrar_todos_nombre_dato(lista_jugadores:list,dato:str, enumerar = False)->bool:
+def mostrar_todos_nombre_dato(lista_jugadores:list,dato:str, enumerar = False)->int:
     """itera sobre todos los jugadores en una lista y extrae el nombre y un dato
 
     Args:
@@ -118,26 +120,24 @@ def mostrar_todos_nombre_dato(lista_jugadores:list,dato:str, enumerar = False)->
         enumerar (bool): si es True, mostrara un prefijo previo al jugador
 
     Returns:
-        bool: retorna True si se pudo mostrar al menos un jugador, False en caso de que la lista este vacia
+        int: retorna True si se pudo mostrar al menos un jugador, False en caso de que la lista este vacia
     """
-    success = False
-
-    contador = 1
+    
+    contador = 0
 
     if lista_jugadores != list():
         if enumerar:
             for jugador in lista_jugadores:
                 
-                print("{0} - {1}".format(contador,obtener_nombre_y_dato(jugador, dato)))
+                print("{0} - {1}".format(contador+1,obtener_nombre_y_dato(jugador, dato)))
                 contador+=1
 
         else:
             for jugador in lista_jugadores:
                 print(obtener_nombre_y_dato(jugador, dato))
-
-        success = True
+                contador+=1
     
-    return success
+    return contador
 
 def obtener_nombre_estadisticas_jugador(jugador:dict):
     lista_estadisticas = ["{0}: {1}".format(capitalizar_palabras(estadistica),jugador["estadisticas"][estadistica]) for estadistica in jugador["estadisticas"]]
@@ -171,11 +171,24 @@ def generar_CSV_jugador(jugador:dict)->str:
 
     return string_CSV
 
+def seleccionar_mostrar_estadisticas_jugador(lista_jugadores):
+    size = mostrar_todos_nombre_dato(lista_jugadores, "posicion",True)
+    str_input = input("ingrese el indice del jugador ")
+    
+    str_estadistica_jugador = str()
+    
+    if str_input.isdecimal() and int(str_input) in range(1,size):
+        str_estadistica_jugador = obtener_nombre_estadisticas_jugador(lista_jugadores[int(str_input)-1])
+    else:
+        str_estadistica_jugador = "Opcion no valida"
+        
+    return str_estadistica_jugador
+
 lista_jugadores = leer_json("dt.json","jugadores")
 
 # print(mostrar_todos_nombre_dato(lista_jugadores, "posicion",True))
 
-print(obtener_nombre_estadisticas_jugador(lista_jugadores[2]))
+print(seleccionar_mostrar_estadisticas_jugador(lista_jugadores))
 
 # print(generar_CSV_jugador(lista_jugadores[2]))
 
