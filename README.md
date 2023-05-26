@@ -1,10 +1,6 @@
-![](Aspose.Words.0be326d2-bb7d-4dce-bd5f-abea06f387af.001.png)
-
 **Examen parcial**
 
 Escribe un programa en Python que cargue la información de los jugadores del Dream Team desde un archivo JSON y realice las siguientes tareas, teniendo en cuenta que cada una de ellas deberá de ser realizada por una función diferente:
-
-![](Aspose.Words.0be326d2-bb7d-4dce-bd5f-abea06f387af.002.jpeg)
 
 1) Mostrar la lista de todos los jugadores del Dream Team. Con el formato: *Nombre Jugador -Posición.* Ejemplo:
 

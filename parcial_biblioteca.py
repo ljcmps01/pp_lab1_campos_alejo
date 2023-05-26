@@ -11,6 +11,21 @@ import json
 import re
 import os
 
+def pedir_entero(mensaje_input = "Ingrese un entero: "):
+    
+    entero = int()
+
+    while True:
+        str_input = input(mensaje_input)
+        
+        if str_input.isdecimal():
+            entero = int(str_input)
+            break
+
+    return entero
+    
+
+
 def leer_json(nombre_archivo:str,header="")->list:
     """procesa un archivo json y guarda su informacion en una lista
 
@@ -145,8 +160,15 @@ def obtener_nombre_estadisticas_jugador(jugador:dict):
 
     return str_jugador
         
+def guardar_CSV_estadistica(jugador:dict)->bool:
+    
+    nombre_archivo = "estadisticas_{0}.csv".format(jugador["nombre"])
+    str_estadisticas = generar_CSV_estadisticas(jugador)
 
-def generar_CSV_jugador(jugador:dict)->str:
+    return guardar_archivo(nombre_archivo, str_estadisticas)
+
+
+def generar_CSV_estadisticas(jugador:dict)->str:
     """genera un string con las estadisticas del jugador
 
     Args:
@@ -159,7 +181,8 @@ def generar_CSV_jugador(jugador:dict)->str:
     lista_keys.remove("estadisticas")
     lista_keys.remove("logros")
 
-    lista_values = [valores for valores in lista_keys]
+    lista_values = [valor for valor in jugador.values() if type(valor) is str ]
+
 
     lista_keys.extend(list(jugador["estadisticas"].keys()))
     lista_values.extend([str(estadistica) for estadistica in jugador["estadisticas"].values()])
@@ -171,24 +194,38 @@ def generar_CSV_jugador(jugador:dict)->str:
 
     return string_CSV
 
-def seleccionar_mostrar_estadisticas_jugador(lista_jugadores):
+def seleccionar_mostrar_estadisticas_jugador(lista_jugadores:list)->str:
     size = mostrar_todos_nombre_dato(lista_jugadores, "posicion",True)
     str_input = input("ingrese el indice del jugador ")
     
     str_estadistica_jugador = str()
     
+    indice_input = -1
+
     if str_input.isdecimal() and int(str_input) in range(1,size):
-        str_estadistica_jugador = obtener_nombre_estadisticas_jugador(lista_jugadores[int(str_input)-1])
+        indice_input = int(str_input)-1
+        str_estadistica_jugador = obtener_nombre_estadisticas_jugador(lista_jugadores[indice_input])
     else:
         str_estadistica_jugador = "Opcion no valida"
         
-    return str_estadistica_jugador
+    print(str_estadistica_jugador)
+
+    return indice_input
+
+def seleccionar_guardar_y_mostrar_estadisticas_jugador(lista_jugadores):
+    indice_jugador = seleccionar_mostrar_estadisticas_jugador(lista_jugadores)
+
+    if indice_jugador != -1:
+        guardar = input("Desea guardar la información del jugador? (y/n)").lower()
+
+        if guardar == "y" or guardar == "s":
+            guardar_CSV_estadistica(lista_jugadores[indice_jugador])
 
 lista_jugadores = leer_json("dt.json","jugadores")
 
 # print(mostrar_todos_nombre_dato(lista_jugadores, "posicion",True))
 
-print(seleccionar_mostrar_estadisticas_jugador(lista_jugadores))
+#seleccionar_guardar_y_mostrar_estadisticas_jugador(lista_jugadores)
 
 # print(generar_CSV_jugador(lista_jugadores[2]))
 
