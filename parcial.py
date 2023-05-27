@@ -1,4 +1,5 @@
 import parcial_biblioteca as dt
+from parcial_biblioteca import lista_jugadores
 import os
 import platform
 
@@ -9,7 +10,7 @@ match platform.system():
     case 'Linux':
         clean_command='clear'
 
-lista_jugadores = dt.leer_json("dt.json","jugadores")
+#lista_jugadores = dt.leer_json("dt.json","jugadores")
 
 while True:
     lista_opciones = ["Mostrar jugadores ",
@@ -18,17 +19,17 @@ while True:
         "",
         "",
         "",
-        "",
-        "",
-        "",
+        "Mostrar jugador con la mayor cantidad de rebotes totales",
+        "Mostrar el jugador con el mayor porcentaje de tiros de campo",
+        "Mostrar el jugador con la mayor cantidad de asistencias totales",
         " ",
         " ",
         " ",
+        "Mostrar el jugador con la mayor cantidad de robos totales",
+        "mostrar el jugador con la mayor cantidad de bloqueos totales",
         " ",
         " ",
-        " ",
-        " ",
-        " ",
+        "Mostrar el jugador con la mayor cantidad de logros obtenidos",
         " ",
         " ",
         " ",
@@ -50,34 +51,45 @@ while True:
             dt.seleccionar_guardar_y_mostrar_estadisticas_jugador(lista_jugadores)
             pass
         case 4:
-            
+
             pass
         case 5:
 
             pass
         case 6:
+
             pass
-        case 7:
+        case 7:     #Mostrar jugador con la mayor cantidad de rebotes totales
+            print(dt.obtener_mostrar_jugador_maximo(lista_jugadores, "rebotes_totales"))
             pass
-        case 8:
+
+        case 8:     #"Mostrar el jugador con el mayor porcentaje de tiros de campo"
+            print(dt.obtener_mostrar_jugador_maximo(lista_jugadores, "porcentaje_tiros_de_campo"))
             pass
-        case 9:
+
+        case 9:     #Mostrar el jugador con la mayor cantidad de asistencias totales",
+            print(dt.obtener_mostrar_jugador_maximo(lista_jugadores, "asistencias_totales"))
             pass
+
         case 10:
             pass
         case 11:
             pass
         case 12:
             pass
-        case 13:
+        case 13:    #Mostrar el jugador con la mayor cantidad de robos totales",
+            print(dt.obtener_mostrar_jugador_maximo(lista_jugadores, "robos_totales"))
             pass
-        case 14:
+        case 14:    #Mostrar el jugador con la mayor cantidad de bloqueos totales",
+            print(dt.obtener_mostrar_jugador_maximo(lista_jugadores, "bloqueos_totales"))
+        
             pass
         case 15:
             pass
         case 16:
             pass
-        case 17:
+        case 17:    #mostrar el jugador con la mayor cantidad de logros obtenidos
+            print(dt.obtener_logros_maximo(lista_jugadores))
             pass
         case 18:
             pass
