@@ -1,15 +1,27 @@
-#Punto 2 y 3: estan las funciones de string hechas, 
-## Punto 2: (HECHO)falta hacer el submenu para elegir el jugador (listar con mostrar_jugadores, pedir al usuario elegir indice, e imprimir
-# sus estadisticas)
+#opcion 1) implementar merge_estadisticas en cada funcion que analise y compare datos, o sea
+#funciones con el parametro es_estadistica
 #
-## Punto 3: falta la funcion de guardado de CSV (usar guardar_archivo y generar_CSV), la funcion debe autogenerar el nombre de archivo
+#opcion 2) aplicar merge_estadisticas luego de leer el json sobre la lista de jugadores
+# eliminar completamente la implementacion de es_estadistica y el campo estadistica
 #
-# Integrar punto 3 en punto 2? preguntar luego de imprimir en el 2, si desea guardar en CSV
+#          rediseñar la impresion de estadisticas del jugador 
+#
+#
+#modificar el calculo de logros para que no lo guarde en un diccionario nesteado
+#o sea:
+"""
+            ANTES                           DESPUES
+[                                   |   [
+    {nombre:},                      |       {nombre},    
+    {estadistica:                   |       {cantidad_de_logros}
+        {cantidad_de_logros:}}      |
+]                                   |   ]
 
-
+"""
 import json
 import re
 import os
+from typing import Callable
 
 def pedir_entero(mensaje_input = "Ingrese un entero: "):
     
@@ -324,6 +336,60 @@ def obtener_logros_maximo(lista_jugadores):
 
 #--------------------------FIN punto 17--------------------------------------
 
+#--------------------------ordenamiento--------------------------------------
+
+def merge_estadisticas(jugador:dict):
+    aux_jugador = dict(jugador)
+
+    for estadistica,valor in aux_jugador["estadisticas"].items():
+        aux_jugador.update({estadistica:valor})
+    del aux_jugador["estadisticas"]
+
+    return aux_jugador
+
+def comparar_strings(primer_str:str,segunda_str:str)->bool:
+
+    primer_str_minuscula = primer_str.lower()
+    segunda_str_minuscula = segunda_str.lower()
+
+    return primer_str_minuscula > segunda_str_minuscula
+
+def comparar_numero(primer_numero, segundo_numero):
+    return primer_numero > segundo_numero
+
+def burbujeo_jugadores(lista_jugadores:list,dato:str,orden_criterio:Callable,ascendiente = True, es_estadistica = True)->list:    
+    lista_ordenada = list(lista_jugadores)
+    n = len(lista_ordenada)
+    
+    if es_estadistica:
+        for indice in range(len(lista_ordenada)):
+            lista_ordenada[indice] = merge_estadisticas(lista_ordenada[indice])
+
+
+    for i in range(n):
+        # Flag para chequear si hubo un swappeo
+        swap = False
+        
+        # Itero sobre los elementos
+        for j in range(0, n-i-1):
+            jugador_a = lista_ordenada[j]
+            jugador_b = lista_ordenada[j+1]
+             
+            if ascendiente is orden_criterio(jugador_a[dato], jugador_b[dato]):
+                # Swap elementos
+                lista_ordenada[j], lista_ordenada[j+1] = lista_ordenada[j+1], lista_ordenada[j]
+                swap = True
+
+                
+        #Si no se swappeo en la iteracion, la lista ya está ordenada 
+        if not swap:
+            break
+    return lista_ordenada
+
 lista_jugadores = leer_json("dt.json","jugadores")
+
+lista_ordenada = burbujeo_jugadores(lista_jugadores, "temporadas", comparar_numero, ascendiente=True,es_estadistica=True)
+
+mostrar_todos_nombre_dato(lista_ordenada, "temporadas", es_estadistica=False)
 
 #mostrar_todos_nombre_dato(obtener_todos_cantidad_logros(lista_jugadores), "cantidad_logros",True)
