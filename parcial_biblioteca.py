@@ -1,23 +1,4 @@
-#opcion 1) implementar merge_estadisticas en cada funcion que analise y compare datos, o sea
-#funciones con el parametro es_estadistica
-#
-#opcion 2) aplicar merge_estadisticas luego de leer el json sobre la lista de jugadores
-# eliminar completamente la implementacion de es_estadistica y el campo estadistica
-#
-#          rediseñar la impresion de estadisticas del jugador 
-#
-#
-#modificar el calculo de logros para que no lo guarde en un diccionario nesteado
-#o sea:
-"""
-            ANTES                           DESPUES
-[                                   |   [
-    {nombre:},                      |       {nombre},    
-    {estadistica:                   |       {cantidad_de_logros}
-        {cantidad_de_logros:}}      |
-]                                   |   ]
 
-"""
 import json
 import re
 import os
@@ -123,15 +104,13 @@ def obtener_nombre_capitalizado(jugador:dict)->str:
     
     return nombre_jugador
 
-def obtener_nombre_y_dato(jugador:dict,dato:str,es_estadistica = False)->str:
+def obtener_nombre_y_dato(jugador:dict,dato:str)->str:
     """Obtiene el nombre y un dato especifico del jugador
 
     Args:
         jugador (dict): diccionario del jugador
         dato (str): dato que desea obtener
-        es_estadistica (bool,optional): indica si se debe acceder al subdiccionario estadistica
-        para acceder al dato deseado
-
+        
     Returns:
         str: string formateada con el nombre y el dato del jugador
     """
@@ -139,12 +118,8 @@ def obtener_nombre_y_dato(jugador:dict,dato:str,es_estadistica = False)->str:
     dato_jugador = str()
     nombre_dato_jugador = str()
 
-    if es_estadistica:
-        if dato in jugador["estadisticas"]:
-            dato_jugador = "{0}: {1}".format(capitalizar_palabras(dato.replace("_", " ")),jugador["estadisticas"][dato])
-    else:
-        if dato in jugador:
-            dato_jugador = "{0}: {1}".format(capitalizar_palabras(dato.replace("_", " ")),jugador[dato])
+    if dato in jugador:
+        dato_jugador = "{0}: {1}".format(capitalizar_palabras(dato.replace("_", " ")),jugador[dato])
     
     if dato_jugador == str():
         dato_jugador = "dato({0}) no encontrado".format(dato)
@@ -153,13 +128,12 @@ def obtener_nombre_y_dato(jugador:dict,dato:str,es_estadistica = False)->str:
 
     return nombre_dato_jugador
 
-def mostrar_todos_nombre_dato(lista_jugadores:list,dato:str, es_estadistica = False, enumerar = False)->int:
+def mostrar_todos_nombre_dato(lista_jugadores:list,dato:str, enumerar = False)->int:
     """itera sobre todos los jugadores en una lista y extrae el nombre y un dato
 
     Args:
         lista_jugadores (list): lista de jugadores a mostrar
         dato (str): dato a obtener
-        es_estadistica (bool,optional): indica si se debe acceder al subdiccionario estadistica
         para acceder al dato deseado
         enumerar (bool): si es True, mostrara un prefijo previo al jugador
 
@@ -173,12 +147,12 @@ def mostrar_todos_nombre_dato(lista_jugadores:list,dato:str, es_estadistica = Fa
         if enumerar:
             for jugador in lista_jugadores:
                 
-                print("{0} - {1}".format(contador+1,obtener_nombre_y_dato(jugador, dato, es_estadistica)))
+                print("{0} - {1}".format(contador+1,obtener_nombre_y_dato(jugador, dato)))
                 contador+=1
 
         else:
             for jugador in lista_jugadores:
-                print(obtener_nombre_y_dato(jugador, dato, es_estadistica))
+                print(obtener_nombre_y_dato(jugador, dato))
                 contador+=1
     
     return contador
@@ -187,17 +161,12 @@ def mostrar_todos_nombre_dato(lista_jugadores:list,dato:str, es_estadistica = Fa
 
 #------------------------------Punto 2 y 3----------------------------------
 def obtener_nombre_estadisticas_jugador(jugador:dict):
-    lista_estadisticas = ["{0}: {1}".format(capitalizar_palabras(estadistica),jugador["estadisticas"][estadistica]) for estadistica in jugador["estadisticas"]]
+    lista_estadisticas = ["{0}: {1}".format(capitalizar_palabras(dato.replace("_"," ")),\
+        jugador[dato]) for dato in jugador if type(jugador[dato]) in [int,float]]
+
     str_jugador = "{0}\n{1}".format(obtener_nombre_capitalizado(jugador),"\n".join(lista_estadisticas))
 
     return str_jugador
-        
-def guardar_CSV_estadistica(jugador:dict)->bool:
-    
-    nombre_archivo = "estadisticas_{0}.csv".format(jugador["nombre"])
-    str_estadisticas = generar_CSV_estadisticas(jugador)
-
-    return guardar_archivo(nombre_archivo, str_estadisticas)
 
 
 def generar_CSV_estadisticas(jugador:dict)->str:
@@ -209,15 +178,13 @@ def generar_CSV_estadisticas(jugador:dict)->str:
     Returns:
         str: string con el contenido del diccionario con formato CSV
     """
-    lista_keys = list(jugador.keys())
-    lista_keys.remove("estadisticas")
-    lista_keys.remove("logros")
-
-    lista_values = [valor for valor in jugador.values() if type(valor) is str ]
-
-
-    lista_keys.extend(list(jugador["estadisticas"].keys()))
-    lista_values.extend([str(estadistica) for estadistica in jugador["estadisticas"].values()])
+    lista_keys = list()
+    lista_values = list()
+    
+    for key,value in jugador.items() :
+        if type(value) is not list:
+            lista_keys.append(key)
+            lista_values.append(str(value))
 
     str_keys = ",".join(lista_keys)
     str_values = ",".join(lista_values)
@@ -225,6 +192,13 @@ def generar_CSV_estadisticas(jugador:dict)->str:
     string_CSV = "{0}\n{1}".format(str_keys,str_values)
 
     return string_CSV
+        
+def guardar_CSV_estadistica(jugador:dict)->bool:
+    
+    nombre_archivo = "estadisticas_{0}.csv".format(jugador["nombre"]).replace(" ","_")
+    str_estadisticas = generar_CSV_estadisticas(jugador)
+
+    return guardar_archivo(nombre_archivo, str_estadisticas)
 
 def seleccionar_mostrar_estadisticas_jugador(lista_jugadores:list)->int:
     """Muestra una lista enumerada de jugadores y pide al usuario seleccionar el indice
@@ -271,14 +245,14 @@ def seleccionar_guardar_y_mostrar_estadisticas_jugador(lista_jugadores:list):
 #--------------------------Punto 2 y 3--------------------------------------
 
 #--------------------------Punto 7:9,13,14--------------------------------------
-def calcular_max(lista_jugadores:list, estadistica: str,es_estadistica=True)->dict:
+def calcular_max(lista_jugadores:list, estadistica: str)->dict:
     extremo_jugador = dict()
     extremo_value = None
 
     for jugador in lista_jugadores:
-        if estadistica in jugador["estadisticas"] and (extremo_value is None or jugador["estadisticas"][estadistica] > extremo_value):
+        if estadistica in jugador and (extremo_value is None or jugador[estadistica] > extremo_value):
             extremo_jugador = jugador
-            extremo_value = jugador["estadisticas"][estadistica]
+            extremo_value = jugador[estadistica]
     
     return extremo_jugador
 
@@ -287,16 +261,16 @@ def calcular_min(lista_jugadores:list, estadistica: str)->dict:
     extremo_value = None
 
     for jugador in lista_jugadores:
-        if estadistica in jugador["estadisticas"] and (extremo_value is None or jugador["estadisticas"][estadistica] < extremo_value):
+        if estadistica in jugador and (extremo_value is None or jugador[estadistica] < extremo_value):
             extremo_jugador = jugador
-            extremo_value = jugador["estadisticas"][estadistica]
+            extremo_value = jugador[estadistica]
     
     return extremo_jugador
 
 def obtener_mostrar_jugador_maximo(lista_jugadores, estadistica)->str:
     jugador_maximo = calcular_max(lista_jugadores, estadistica) 
     
-    return obtener_nombre_y_dato(jugador_maximo, estadistica, True)
+    return obtener_nombre_y_dato(jugador_maximo, estadistica)
 #--------------------------Fin puntos 7:9,13,14--------------------------------------
 
 #--------------------------Punto 17--------------------------------------
@@ -319,7 +293,7 @@ def contar_logros_jugador(jugador)->dict:
         else:
             acumulador_logros += 1
     
-    return {"nombre": jugador["nombre"],"estadisticas":{"cantidad_logros": acumulador_logros}}
+    return {"nombre": jugador["nombre"],"cantidad_logros": acumulador_logros}
 
 def obtener_todos_cantidad_logros(lista_jugadores):
     lista_logros = list()
@@ -332,7 +306,7 @@ def obtener_todos_cantidad_logros(lista_jugadores):
 def obtener_logros_maximo(lista_jugadores):
     jugador_maximo = calcular_max(obtener_todos_cantidad_logros(lista_jugadores), "cantidad_logros")
 
-    return obtener_nombre_y_dato(jugador_maximo, "cantidad_logros",True)
+    return obtener_nombre_y_dato(jugador_maximo, "cantidad_logros")
 
 #--------------------------FIN punto 17--------------------------------------
 
@@ -341,11 +315,24 @@ def obtener_logros_maximo(lista_jugadores):
 def merge_estadisticas(jugador:dict):
     aux_jugador = dict(jugador)
 
-    for estadistica,valor in aux_jugador["estadisticas"].items():
-        aux_jugador.update({estadistica:valor})
-    del aux_jugador["estadisticas"]
+    if "estadisticas" in jugador:
+        for estadistica,valor in aux_jugador["estadisticas"].items():
+            aux_jugador.update({estadistica:valor})
+        del aux_jugador["estadisticas"]
+
+    else:
+        print("no se encontró el campo 'estadisticas'")
 
     return aux_jugador
+
+def merge_all_estadisticas (lista_jugadores:list):
+    aux_jugadores = list()
+
+    for jugador in lista_jugadores:
+        aux_jugadores.append(merge_estadisticas(jugador))
+    
+    return aux_jugadores
+        
 
 def comparar_strings(primer_str:str,segunda_str:str)->bool:
 
@@ -357,14 +344,9 @@ def comparar_strings(primer_str:str,segunda_str:str)->bool:
 def comparar_numero(primer_numero, segundo_numero):
     return primer_numero > segundo_numero
 
-def burbujeo_jugadores(lista_jugadores:list,dato:str,orden_criterio:Callable,ascendiente = True, es_estadistica = True)->list:    
+def burbujeo_jugadores(lista_jugadores:list,dato:str,orden_criterio:Callable,ascendiente = True)->list:    
     lista_ordenada = list(lista_jugadores)
     n = len(lista_ordenada)
-    
-    if es_estadistica:
-        for indice in range(len(lista_ordenada)):
-            lista_ordenada[indice] = merge_estadisticas(lista_ordenada[indice])
-
 
     for i in range(n):
         # Flag para chequear si hubo un swappeo
@@ -387,9 +369,10 @@ def burbujeo_jugadores(lista_jugadores:list,dato:str,orden_criterio:Callable,asc
     return lista_ordenada
 
 lista_jugadores = leer_json("dt.json","jugadores")
+lista_jugadores = merge_all_estadisticas(lista_jugadores)
 
-lista_ordenada = burbujeo_jugadores(lista_jugadores, "temporadas", comparar_numero, ascendiente=True,es_estadistica=True)
+# lista_ordenada = burbujeo_jugadores(lista_jugadores, "temporadas", comparar_numero, ascendiente=True)
 
-mostrar_todos_nombre_dato(lista_ordenada, "temporadas", es_estadistica=False)
+# mostrar_todos_nombre_dato(lista_ordenada, "temporadas")
 
 #mostrar_todos_nombre_dato(obtener_todos_cantidad_logros(lista_jugadores), "cantidad_logros",True)
