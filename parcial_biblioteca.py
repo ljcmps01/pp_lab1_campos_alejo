@@ -1,4 +1,8 @@
-
+"""
+Unificar calculo de min y max utilizando un parametro opcional ascendiente=True  
+utilizar la logica:
+    if ascendiente is a>b:
+"""
 import json
 import re
 import os
@@ -17,6 +21,13 @@ def pedir_entero(mensaje_input = "Ingrese un entero: "):
 
     return entero
     
+def ingresar_float(mensaje_input:str):
+    while True:
+        numero = input(mensaje_input)
+        if buscar_patron('^([0-9]*)(\.|,*)([0-9]+)$', numero):
+            return float(numero.replace(",","."))
+        else:
+            print("Ingreso invalido.")
 
 
 def leer_json(nombre_archivo:str,header="")->list:
@@ -245,23 +256,12 @@ def seleccionar_guardar_y_mostrar_estadisticas_jugador(lista_jugadores:list):
 #--------------------------Punto 2 y 3--------------------------------------
 
 #--------------------------Punto 7:9,13,14--------------------------------------
-def calcular_max(lista_jugadores:list, estadistica: str)->dict:
+def calcular_max(lista_jugadores:list, estadistica: str, ascendiente = True)->dict:
     extremo_jugador = dict()
     extremo_value = None
 
     for jugador in lista_jugadores:
-        if estadistica in jugador and (extremo_value is None or jugador[estadistica] > extremo_value):
-            extremo_jugador = jugador
-            extremo_value = jugador[estadistica]
-    
-    return extremo_jugador
-
-def calcular_min(lista_jugadores:list, estadistica: str)->dict:
-    extremo_jugador = dict()
-    extremo_value = None
-
-    for jugador in lista_jugadores:
-        if estadistica in jugador and (extremo_value is None or jugador[estadistica] < extremo_value):
+        if estadistica in jugador and (extremo_value is None or ((jugador[estadistica] > extremo_value) is ascendiente)):
             extremo_jugador = jugador
             extremo_value = jugador[estadistica]
     
@@ -368,11 +368,41 @@ def burbujeo_jugadores(lista_jugadores:list,dato:str,orden_criterio:Callable,asc
             break
     return lista_ordenada
 
+#----------------------------Fin ordenamiento------------------------------------
+
+#----------------------------Funciones umbral------------------------------------
+
+def comprobar_umbral(jugador:dict, dato:str, umbral)->bool:
+    return (dato in jugador) and (type(jugador[dato]) in [float,int]) and (jugador[dato] > umbral)
+
+def obtener_superadores_umbral(lista_jugadores:dict, dato:str, umbral)->list:
+    lista_superadores = list()
+    for jugador in lista_jugadores:
+        if dato in jugador and comprobar_umbral(jugador, dato, umbral):
+            lista_superadores.append(jugador)
+    return lista_superadores
+
+def pedir_umbral_y_mostrar_superadores(lista_jugadores:list, dato:str)->list:
+    umbral = ingresar_float("Ingrese umbral de {0}: ".format(dato.replace("_"," ")))
+    
+    lista_superadores = obtener_superadores_umbral(lista_jugadores, dato, umbral)
+
+    if lista_superadores != list():
+        mostrar_todos_nombre_dato(lista_superadores, dato)
+    else:
+        print("No se encontraron jugadores que superen {0} {1} ".format(umbral, dato.replace("_", " ")))
+#--------------------------------Fin umbral--------------------------------------
+
 lista_jugadores = leer_json("dt.json","jugadores")
 lista_jugadores = merge_all_estadisticas(lista_jugadores)
+lista_jugadores = burbujeo_jugadores(lista_jugadores, "nombre", comparar_strings)
+
+
 
 # lista_ordenada = burbujeo_jugadores(lista_jugadores, "temporadas", comparar_numero, ascendiente=True)
 
 # mostrar_todos_nombre_dato(lista_ordenada, "temporadas")
 
 #mostrar_todos_nombre_dato(obtener_todos_cantidad_logros(lista_jugadores), "cantidad_logros",True)
+
+#pedir_umbral_y_mostrar_superadores(lista_jugadores, "temporadas")
