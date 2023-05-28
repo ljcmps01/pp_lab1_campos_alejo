@@ -115,7 +115,7 @@ def obtener_nombre_capitalizado(jugador:dict)->str:
     
     return nombre_jugador
 
-def obtener_nombre_y_dato(jugador:dict,dato:str)->str:
+def obtener_nombre_y_dato(jugador:dict,dato:str,sufijo="")->str:
     """Obtiene el nombre y un dato especifico del jugador
 
     Args:
@@ -130,7 +130,7 @@ def obtener_nombre_y_dato(jugador:dict,dato:str)->str:
     nombre_dato_jugador = str()
 
     if dato in jugador:
-        dato_jugador = "{0}: {1}".format(capitalizar_palabras(dato.replace("_", " ")),jugador[dato])
+        dato_jugador = "{0}: {1}{2}".format(capitalizar_palabras(dato.replace("_", " ")),jugador[dato],sufijo)
     
     if dato_jugador == str():
         dato_jugador = "dato({0}) no encontrado".format(dato)
@@ -139,7 +139,7 @@ def obtener_nombre_y_dato(jugador:dict,dato:str)->str:
 
     return nombre_dato_jugador
 
-def mostrar_todos_nombre_dato(lista_jugadores:list,dato:str, enumerar = False)->int:
+def mostrar_todos_nombre_dato(lista_jugadores:list,dato:str, enumerar = False, sufijo="")->int:
     """itera sobre todos los jugadores en una lista y extrae el nombre y un dato
 
     Args:
@@ -158,12 +158,12 @@ def mostrar_todos_nombre_dato(lista_jugadores:list,dato:str, enumerar = False)->
         if enumerar:
             for jugador in lista_jugadores:
                 
-                print("{0} - {1}".format(contador+1,obtener_nombre_y_dato(jugador, dato)))
+                print("{0} - {1}{2}".format(contador+1,obtener_nombre_y_dato(jugador, dato)))
                 contador+=1
 
         else:
             for jugador in lista_jugadores:
-                print(obtener_nombre_y_dato(jugador, dato))
+                print(obtener_nombre_y_dato(jugador, dato,sufijo = sufijo))
                 contador+=1
     
     return contador
@@ -382,27 +382,39 @@ def obtener_superadores_umbral(lista_jugadores:dict, dato:str, umbral)->list:
             lista_superadores.append(jugador)
     return lista_superadores
 
-def pedir_umbral_y_mostrar_superadores(lista_jugadores:list, dato:str)->list:
+def pedir_umbral_y_obtener_superadores(lista_jugadores:list, dato:str)->list:
     umbral = ingresar_float("Ingrese umbral de {0}: ".format(dato.replace("_"," ")))
     
     lista_superadores = obtener_superadores_umbral(lista_jugadores, dato, umbral)
 
-    if lista_superadores != list():
-        mostrar_todos_nombre_dato(lista_superadores, dato)
-    else:
-        print("No se encontraron jugadores que superen {0} {1} ".format(umbral, dato.replace("_", " ")))
+    if lista_superadores == list():
+        print("No se encontraron jugadores que superen {0} {1} ".format(umbral, dato.replace("_", " ")).replace(" porcentaje","%"))
+    
+    return lista_superadores
 #--------------------------------Fin umbral--------------------------------------
+
+#--------------------------------Punto 20--------------------------------
+def separar_por_posicion(lista_jugadores:list)->dict:
+    lista_ordenada = burbujeo_jugadores(lista_jugadores, "posicion", comparar_strings)
+    posicion_actual = str()
+    diccionario_posicion = dict()
+    for jugador in lista_ordenada:
+        if jugador["posicion"] == posicion_actual:
+            diccionario_posicion[posicion_actual].append(jugador)
+        else:
+            posicion_actual = jugador["posicion"]
+            diccionario_posicion.update({posicion_actual:[jugador]})
+        
+    return diccionario_posicion
+#---------------------------------Fin punto 20-------------------------------
+
+#--------------------------------Calcular promedio-----------------------------------
+
+# def calcular_promedio_dato(lista_jugadores:list, dato:str)->float:
+#     if 
+
+#--------------------------------Fin calculo promedio--------------------------------
 
 lista_jugadores = leer_json("dt.json","jugadores")
 lista_jugadores = merge_all_estadisticas(lista_jugadores)
 lista_jugadores = burbujeo_jugadores(lista_jugadores, "nombre", comparar_strings)
-
-
-
-# lista_ordenada = burbujeo_jugadores(lista_jugadores, "temporadas", comparar_numero, ascendiente=True)
-
-# mostrar_todos_nombre_dato(lista_ordenada, "temporadas")
-
-#mostrar_todos_nombre_dato(obtener_todos_cantidad_logros(lista_jugadores), "cantidad_logros",True)
-
-#pedir_umbral_y_mostrar_superadores(lista_jugadores, "temporadas")

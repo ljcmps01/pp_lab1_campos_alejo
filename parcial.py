@@ -31,8 +31,8 @@ while True:
         "",
         "Mostrar el jugador con la mayor cantidad de logros obtenidos",
         "Ingresar umbral y mostrar superadores de porcentaje de tiros triples ",
-        " ",
-        " ",
+        "Mostrar el jugador con la mayor cantidad temporadas jugadas",
+        "Ingresar umbral y mostrar superadores de porcentaje de tiros de campo por posicion",
         "salir"]
 
     for i in range(len(lista_opciones)) :
@@ -64,7 +64,7 @@ while True:
             pass
 
         case 8:     #"Mostrar el jugador con el mayor porcentaje de tiros de campo"
-            print(dt.obtener_mostrar_jugador_maximo(lista_jugadores, "porcentaje_tiros_de_campo"))
+            print(dt.obtener_mostrar_jugador_maximo(lista_jugadores, "porcentaje_tiros_de_campo",sufijo='%'))
             pass
 
         case 9:     #Mostrar el jugador con la mayor cantidad de asistencias totales",
@@ -72,14 +72,17 @@ while True:
             pass
 
         case 10:    #Ingresar umbral y mostrar superadores de promedio de puntos por partido ",
-            dt.pedir_umbral_y_mostrar_superadores(lista_jugadores, "promedio_puntos_por_partido")
+            lista_superadores = dt.pedir_umbral_y_obtener_superadores(lista_jugadores, "promedio_puntos_por_partido")
+            dt.mostrar_todos_nombre_dato(lista_superadores, "promedio_puntos_por_partido")
             
 
         case 11:    # "Ingresar umbral y mostrar superadores de promedio de rebotes ",
-            dt.pedir_umbral_y_mostrar_superadores(lista_jugadores, "promedio_rebotes_por_partido")
+            lista_superadores = dt.pedir_umbral_y_obtener_superadores(lista_jugadores, "promedio_rebotes_por_partido")
+            dt.mostrar_todos_nombre_dato(lista_superadores, "promedio_rebotes_por_partido")
 
         case 12:    # "Ingresar umbral y mostrar superadores de promedio de asistencias ",
-            dt.pedir_umbral_y_mostrar_superadores(lista_jugadores, "promedio_asistencias_por_partido")
+            lista_superadores = dt.pedir_umbral_y_obtener_superadores(lista_jugadores, "promedio_asistencias_por_partido")
+            dt.mostrar_todos_nombre_dato(lista_superadores, "promedio_asistencias_por_partido")
 
         case 13:    #Mostrar el jugador con la mayor cantidad de robos totales",
             print(dt.obtener_mostrar_jugador_maximo(lista_jugadores, "robos_totales"))
@@ -89,7 +92,8 @@ while True:
         
             pass
         case 15:    #Ingresar umbral y mostrar superadores de porcentaje de tiros libres
-            dt.pedir_umbral_y_mostrar_superadores(lista_jugadores, "porcentaje_tiros_libres")
+            lista_superadores = dt.pedir_umbral_y_obtener_superadores(lista_jugadores, "porcentaje_tiros_libres")
+            dt.mostrar_todos_nombre_dato(lista_superadores, "porcentaje_tiros_libres",sufijo='%')
 
         case 16:
             pass
@@ -97,11 +101,21 @@ while True:
             print(dt.obtener_logros_maximo(lista_jugadores))
             pass
         case 18:    #Ingresar umbral y mostrar superadores de porcentaje de tiros triples
-            dt.pedir_umbral_y_mostrar_superadores(lista_jugadores, "porcentaje_tiros_triples")
-        case 19:
-            pass
-        case 20:
-            pass
+            lista_superadores = dt.pedir_umbral_y_obtener_superadores(lista_jugadores, "porcentaje_tiros_triples")
+            dt.mostrar_todos_nombre_dato(lista_superadores,  "porcentaje_tiros_triples",sufijo='%')
+
+        case 19:    #Mostrar el jugador con la mayor cantidad temporadas jugadas
+            print(dt.obtener_mostrar_jugador_maximo(lista_jugadores, "temporadas"))
+
+        case 20:    #Ingresar umbral y mostrar superadores de porcentaje de tiros de campo por posicion
+            lista_superadores =dt.pedir_umbral_y_obtener_superadores(lista_jugadores, "porcentaje_tiros_de_campo") 
+            dict_separacion_posicion = dt.separar_por_posicion(lista_superadores)
+
+            for posicion,sublista in dict_separacion_posicion.items():
+                print("--------------------------------\n{0}".format(posicion.upper()))
+                dt.mostrar_todos_nombre_dato(sublista, "porcentaje_tiros_de_campo",sufijo='%')
+            print("")
+
         case 21:
             break
         case 23:
