@@ -1,6 +1,4 @@
 """
-# Reorganizar por tipo de funcion 
-
 #Agregar funcion de menu principal
 
 #Documentar
@@ -14,28 +12,7 @@ import re
 import os
 from typing import Callable
 
-def pedir_entero(mensaje_input = "Ingrese un entero: "):
-    
-    entero = int()
-
-    while True:
-        str_input = input(mensaje_input)
-        
-        if str_input.isdecimal():
-            entero = int(str_input)
-            break
-
-    return entero
-    
-def ingresar_float(mensaje_input:str):
-    while True:
-        numero = input(mensaje_input)
-        if buscar_patron('^([0-9]*)(\.|,*)([0-9]+)$', numero):
-            return float(numero.replace(",","."))
-        else:
-            print("Ingreso invalido.")
-
-
+#-----------------------------Archivos-----------------------------------
 def leer_json(nombre_archivo:str,header="")->list:
     """procesa un archivo json y guarda su informacion en una lista
 
@@ -77,9 +54,66 @@ def guardar_archivo(nombre_archivo:str, contenido:str())->bool:
         print("Se creo el archivo {0}".format(nombre_archivo))
     else:
         print("ERROR al crear el archivo {0}".format(nombre_archivo))
+        
+    return success
+
+def generar_CSV_estadisticas(jugador:dict)->str:
+    """genera un string con las estadisticas del jugador
+
+    Args:
+        jugador (dict): jugador a generar
+
+    Returns:
+        str: string con el contenido del diccionario con formato CSV
+    """
+    lista_keys = list()
+    lista_values = list()
+    
+    for key,value in jugador.items() :
+        if type(value) is not list:
+            lista_keys.append(key)
+            lista_values.append(str(value))
+
+    str_keys = ",".join(lista_keys)
+    str_values = ",".join(lista_values)
+
+    string_CSV = "{0}\n{1}".format(str_keys,str_values)
+
+    return string_CSV
+        
+def guardar_CSV_estadistica(jugador:dict)->bool:
+    
+    nombre_archivo = "estadisticas_{0}.csv".format(jugador["nombre"]).replace(" ","_")
+    str_estadisticas = generar_CSV_estadisticas(jugador)
+
+    return guardar_archivo(nombre_archivo, str_estadisticas)
+    #--------------------------------------------
+
+#--------------------Validaciones-------------
+def pedir_entero(mensaje_input = "Ingrese un entero: "):
+    
+    entero = int()
+
+    while True:
+        str_input = input(mensaje_input)
+        
+        if str_input.isdecimal():
+            entero = int(str_input)
+            break
+
+    return entero
+    
+def ingresar_float(mensaje_input:str):
+    while True:
+        numero = input(mensaje_input)
+        if buscar_patron('^([0-9]*)(\.|,*)([0-9]+)$', numero):
+            return float(numero.replace(",","."))
+        else:
+            print("Ingreso invalido.")
+    #--------
 
 
-#----------------------------punto 1------------------------------------
+#----------------------------manipulacion strings------------------------------------
 def capitalizar(matchobj):
     """capitaliza el contenido del matchobj
 
@@ -173,95 +207,9 @@ def mostrar_todos_nombre_dato(lista_jugadores:list,dato:str, enumerar = False, s
                 contador+=1
     
     return contador
-#-----------------------------Fin Punto 1-----------------------------------
+    #----------------------------------------------------------------
 
-
-#------------------------------Punto 2 y 3----------------------------------
-def obtener_nombre_estadisticas_jugador(jugador:dict):
-    lista_estadisticas = ["{0}: {1}".format(capitalizar_palabras(dato.replace("_"," ")),\
-        jugador[dato]) for dato in jugador if type(jugador[dato]) in [int,float]]
-
-    str_jugador = "{0}\n{1}".format(obtener_nombre_capitalizado(jugador),"\n".join(lista_estadisticas))
-
-    return str_jugador
-
-
-def generar_CSV_estadisticas(jugador:dict)->str:
-    """genera un string con las estadisticas del jugador
-
-    Args:
-        jugador (dict): jugador a generar
-
-    Returns:
-        str: string con el contenido del diccionario con formato CSV
-    """
-    lista_keys = list()
-    lista_values = list()
-    
-    for key,value in jugador.items() :
-        if type(value) is not list:
-            lista_keys.append(key)
-            lista_values.append(str(value))
-
-    str_keys = ",".join(lista_keys)
-    str_values = ",".join(lista_values)
-
-    string_CSV = "{0}\n{1}".format(str_keys,str_values)
-
-    return string_CSV
-        
-def guardar_CSV_estadistica(jugador:dict)->bool:
-    
-    nombre_archivo = "estadisticas_{0}.csv".format(jugador["nombre"]).replace(" ","_")
-    str_estadisticas = generar_CSV_estadisticas(jugador)
-
-    return guardar_archivo(nombre_archivo, str_estadisticas)
-
-def seleccionar_mostrar_estadisticas_jugador(lista_jugadores:list)->int:
-    """Muestra una lista enumerada de jugadores y pide al usuario seleccionar el indice
-    de uno e imprime las estadisticas del mismo
-
-    Args:
-        lista_jugadores (list): lista que contiene los diccionarios de jugadores
-
-    Returns:
-        int: retorna el indice del jugador seleccionado
-    """
-    size = mostrar_todos_nombre_dato(lista_jugadores, "posicion", enumerar=True)
-    indice_jugador = pedir_entero(mensaje_input="ingrese el indice del jugador ")
-    
-    str_estadistica_jugador = str()
-    
-    if indice_jugador in range(1,size+1):
-        indice_jugador -= 1
-        str_estadistica_jugador = obtener_nombre_estadisticas_jugador(lista_jugadores[indice_jugador])
-    else:
-        str_estadistica_jugador = "Opcion no valida"
-        indice_jugador = -1
-        
-    print(str_estadistica_jugador)
-
-    return indice_jugador
-
-def seleccionar_guardar_y_mostrar_estadisticas_jugador(lista_jugadores:list):
-    """Muestra la lista de nombres de  jugadores y pide al usuario seleccionar uno,
-    imprime sus estadisticas y luego consulta si desea guardar la informacion en un archivo
-    CSV
-
-    Args:
-        lista_jugadores (list): lista de jugadores a analizar
-    """
-    indice_jugador = seleccionar_mostrar_estadisticas_jugador(lista_jugadores)
-
-    if indice_jugador != -1:
-        guardar = input("Desea guardar la información del jugador? (y/n)").lower()
-
-        if guardar == "y" or guardar == "s":
-            guardar_CSV_estadistica(lista_jugadores[indice_jugador])
-
-#--------------------------Punto 2 y 3--------------------------------------
-
-#--------------------------Punto 7:9,13,14--------------------------------------
+#--------------------------Funciones maximos (Punto 7:9,13,14)--------------------------------------
 def calcular_max(lista_jugadores:list, estadistica: str, ascendiente = True)->dict:
     extremo_jugador = dict()
     extremo_value = None
@@ -277,44 +225,10 @@ def obtener_mostrar_jugador_maximo(lista_jugadores, estadistica)->str:
     jugador_maximo = calcular_max(lista_jugadores, estadistica) 
     
     return obtener_nombre_y_dato(jugador_maximo, estadistica)
-#--------------------------Fin puntos 7:9,13,14--------------------------------------
-
-#--------------------------Punto 17--------------------------------------
-
-def buscar_patron(patron:str, entrada:str)->bool:
-    if re.findall(patron, entrada) != list():
-        return True
-    else:
-        return False
+    #--------------------------Fin (puntos 7:9,13,14)--------------------------------------
 
 
-def contar_logros_jugador(jugador)->dict:
-    jugador_logros = {"nombre": str(),"cantidad_logros":int()}
-    nombre_jugador = obtener_nombre_capitalizado(jugador)
-    acumulador_logros = 0
-    for logro in jugador["logros"]:
-        if buscar_patron("^[0-9]+ veces", logro):
-            numero = int(re.sub(" veces.*","",logro))
-            acumulador_logros += numero
-        else:
-            acumulador_logros += 1
-    
-    return {"nombre": jugador["nombre"],"cantidad_logros": acumulador_logros}
 
-def obtener_todos_cantidad_logros(lista_jugadores):
-    lista_logros = list()
-
-    for jugador in lista_jugadores:
-        lista_logros.append(contar_logros_jugador(jugador))
-
-    return lista_logros
-
-def obtener_logros_maximo(lista_jugadores):
-    jugador_maximo = calcular_max(obtener_todos_cantidad_logros(lista_jugadores), "cantidad_logros")
-
-    return obtener_nombre_y_dato(jugador_maximo, "cantidad_logros")
-
-#--------------------------FIN punto 17--------------------------------------
 
 #--------------------------ordenamiento--------------------------------------
 
@@ -399,21 +313,6 @@ def pedir_umbral_y_obtener_superadores(lista_jugadores:list, dato:str)->list:
     return lista_superadores
     #--------------------------------Fin umbral--------------------------------------
 
-#--------------------------------Punto 20--------------------------------
-def separar_por_posicion(lista_jugadores:list)->dict:
-    lista_ordenada = burbujeo_jugadores(lista_jugadores, "posicion", comparar_strings)
-    posicion_actual = str()
-    diccionario_posicion = dict()
-    for jugador in lista_ordenada:
-        if jugador["posicion"] == posicion_actual:
-            diccionario_posicion[posicion_actual].append(jugador)
-        else:
-            posicion_actual = jugador["posicion"]
-            diccionario_posicion.update({posicion_actual:[jugador]})
-        
-    return diccionario_posicion
-    #---------------------------------Fin punto 20-------------------------------
-
 #--------------------------------Calcular promedio-----------------------------------
 
 def calcular_promedio_dato(lista_jugadores:list, dato:str)->float:
@@ -430,10 +329,16 @@ def calcular_promedio_dato(lista_jugadores:list, dato:str)->float:
 
     return promedio
 
-#--------------------------------Fin calculo promedio--------------------------------
+    #--------------------------------Fin calculo promedio--------------------------------
 
 #--------------------------------Re-Gex/Busqueda--------------------------------
 
+def buscar_patron(patron:str, entrada:str)->bool:
+    if re.findall(patron, entrada) != list():
+        return True
+    else:
+        return False
+    
 def buscar_jugador(lista_jugadores:list):
     nombre_ingresado = input("Ingrese el nombre del jugador: ").lower()
     len_input = len(nombre_ingresado)
@@ -451,6 +356,61 @@ def buscar_jugador(lista_jugadores:list):
 
     #----------------------------------------------------------------
 
+#------------------------------Punto 2 y 3----------------------------------
+def obtener_nombre_estadisticas_jugador(jugador:dict):
+    lista_estadisticas = ["{0}: {1}".format(capitalizar_palabras(dato.replace("_"," ")),\
+        jugador[dato]) for dato in jugador if type(jugador[dato]) in [int,float]]
+
+    str_jugador = "{0}\n{1}".format(obtener_nombre_capitalizado(jugador),"\n".join(lista_estadisticas))
+
+    return str_jugador
+
+
+def seleccionar_mostrar_estadisticas_jugador(lista_jugadores:list)->int:
+    """Muestra una lista enumerada de jugadores y pide al usuario seleccionar el indice
+    de uno e imprime las estadisticas del mismo
+
+    Args:
+        lista_jugadores (list): lista que contiene los diccionarios de jugadores
+
+    Returns:
+        int: retorna el indice del jugador seleccionado
+    """
+    size = mostrar_todos_nombre_dato(lista_jugadores, "posicion", enumerar=True)
+    indice_jugador = pedir_entero(mensaje_input="ingrese el indice del jugador ")
+    
+    str_estadistica_jugador = str()
+    
+    if indice_jugador in range(1,size+1):
+        indice_jugador -= 1
+        str_estadistica_jugador = obtener_nombre_estadisticas_jugador(lista_jugadores[indice_jugador])
+    else:
+        str_estadistica_jugador = "Opcion no valida"
+        indice_jugador = -1
+        
+    print(str_estadistica_jugador)
+
+    return indice_jugador
+
+def seleccionar_guardar_y_mostrar_estadisticas_jugador(lista_jugadores:list):
+    """Muestra la lista de nombres de  jugadores y pide al usuario seleccionar uno,
+    imprime sus estadisticas y luego consulta si desea guardar la informacion en un archivo
+    CSV
+
+    Args:
+        lista_jugadores (list): lista de jugadores a analizar
+    """
+    indice_jugador = seleccionar_mostrar_estadisticas_jugador(lista_jugadores)
+
+    if indice_jugador != -1:
+        guardar = input("Desea guardar la información del jugador? (y/n)").lower()
+
+        if guardar == "y" or guardar == "s":
+            guardar_CSV_estadistica(lista_jugadores[indice_jugador])
+
+#--------------------------Punto 2 y 3--------------------------------------
+
+
 #-------------------------------Punto 6------------------------------
 def pertenece_hof(jugador:dict):
     return "logros" in jugador and "Miembro del Salon de la Fama del Baloncesto" in jugador["logros"]
@@ -464,7 +424,55 @@ def pedir_nombre_y_comprobar_hof(lista_jugadores):
         else:
             print("{0} NO pertenece al salon de la fama".format(jugador["nombre"]))
 
-#--------------------------------Punto 4--------------------------------
+    #--------------------------------Punto 6--------------------------------
+
+
+#--------------------------Punto 17--------------------------------------
+
+
+
+def contar_logros_jugador(jugador)->dict:
+    jugador_logros = {"nombre": str(),"cantidad_logros":int()}
+    nombre_jugador = obtener_nombre_capitalizado(jugador)
+    acumulador_logros = 0
+    for logro in jugador["logros"]:
+        if buscar_patron("^[0-9]+ veces", logro):
+            numero = int(re.sub(" veces.*","",logro))
+            acumulador_logros += numero
+        else:
+            acumulador_logros += 1
+    
+    return {"nombre": jugador["nombre"],"cantidad_logros": acumulador_logros}
+
+def obtener_todos_cantidad_logros(lista_jugadores):
+    lista_logros = list()
+
+    for jugador in lista_jugadores:
+        lista_logros.append(contar_logros_jugador(jugador))
+
+    return lista_logros
+
+def obtener_logros_maximo(lista_jugadores):
+    jugador_maximo = calcular_max(obtener_todos_cantidad_logros(lista_jugadores), "cantidad_logros")
+
+    return obtener_nombre_y_dato(jugador_maximo, "cantidad_logros")
+
+#--------------------------FIN punto 17--------------------------------------
+
+#--------------------------------Punto 20--------------------------------
+def separar_por_posicion(lista_jugadores:list)->dict:
+    lista_ordenada = burbujeo_jugadores(lista_jugadores, "posicion", comparar_strings)
+    posicion_actual = str()
+    diccionario_posicion = dict()
+    for jugador in lista_ordenada:
+        if jugador["posicion"] == posicion_actual:
+            diccionario_posicion[posicion_actual].append(jugador)
+        else:
+            posicion_actual = jugador["posicion"]
+            diccionario_posicion.update({posicion_actual:[jugador]})
+        
+    return diccionario_posicion
+    #---------------------------------Fin punto 20-------------------------------
 
 
 lista_jugadores = leer_json("dt.json","jugadores")
