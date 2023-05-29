@@ -82,6 +82,14 @@ def generar_CSV_estadisticas(jugador:dict)->str:
     return string_CSV
         
 def guardar_CSV_estadistica(jugador:dict)->bool:
+    """Genera un CSV con las estadisticas del jugador pasado como parametro
+
+    Args:
+        jugador (dict): diccionario del jugador a guardar
+
+    Returns:
+        bool: Retorna True si el archivo fue generado exitosamente, caso contrario retorna False
+    """
     
     nombre_archivo = "estadisticas_{0}.csv".format(jugador["nombre"]).replace(" ","_")
     str_estadisticas = generar_CSV_estadisticas(jugador)
@@ -91,6 +99,14 @@ def guardar_CSV_estadistica(jugador:dict)->bool:
 
 #--------------------Validaciones-------------
 def pedir_entero(mensaje_input = "Ingrese un entero: "):
+    """Pide al usuario un input hasta que ingrese un entero para
+
+    Args:
+        mensaje_input (str, optional): Mensaje a mostrar al usuario al pedir el input. Defaults to "Ingrese un entero: ".
+
+    Returns:
+        int: retorna el entero ingresado
+    """
     
     entero = int()
 
@@ -104,6 +120,14 @@ def pedir_entero(mensaje_input = "Ingrese un entero: "):
     return entero
     
 def ingresar_float(mensaje_input:str):
+    """Pide al usuario un input hasta que ingrese un numero, acepta decimales separados por . o ,
+
+    Args:
+        mensaje_input (str): _description_
+
+    Returns:
+        float: retorna el numero ingresado y convertido a float
+    """
     while True:
         numero = input(mensaje_input)
         if buscar_patron('^([0-9]*)(\.|,*)([0-9]+)$', numero):
@@ -211,6 +235,16 @@ def mostrar_todos_nombre_dato(lista_jugadores:list,dato:str, enumerar = False, s
 
 #--------------------------Funciones maximos (Punto 7:9,13,14)--------------------------------------
 def calcular_max(lista_jugadores:list, estadistica: str, ascendiente = True)->dict:
+    """Obtiene el jugador que contiene la campo pasado como parametro con mayor valor
+
+    Args:
+        lista_jugadores (list): lista de jugadores a analizar
+        estadistica (str): campo sobre el que buscar maximo
+        ascendiente (bool, optional): Indica si es ascendiente(true) o descendiente(false). Defaults to True.
+
+    Returns:
+        dict: retorna el jugador maximo
+    """
     extremo_jugador = dict()
     extremo_value = None
 
@@ -221,7 +255,16 @@ def calcular_max(lista_jugadores:list, estadistica: str, ascendiente = True)->di
     
     return extremo_jugador
 
-def obtener_mostrar_jugador_maximo(lista_jugadores, estadistica)->str:
+def obtener_mostrar_jugador_maximo(lista_jugadores:list, estadistica:str)->str:
+    """busca el maximo de cierta estadistica e imprime el nombre de dicho jugador junto con el valor
+
+    Args:
+        lista_jugadores (list): lista de jugadores a analizar
+        estadistica (str): campo sobre el que buscar el maximo
+
+    Returns:
+        str: retorna una string formateada con nombre y estadistica
+    """
     jugador_maximo = calcular_max(lista_jugadores, estadistica) 
     
     return obtener_nombre_y_dato(jugador_maximo, estadistica)
@@ -232,7 +275,15 @@ def obtener_mostrar_jugador_maximo(lista_jugadores, estadistica)->str:
 
 #--------------------------ordenamiento--------------------------------------
 
-def merge_estadisticas(jugador:dict):
+def merge_estadisticas(jugador:dict)->dict:
+    """Sube un nivel los campos encontrados dentro del diccionario estadistica y elimina el diccionario estadistica
+
+    Args:
+        jugador (dict): jugador sobre el cual se desea extraer las estadisticas
+
+    Returns:
+        dict: retorna el jugador generado
+    """
     aux_jugador = dict(jugador)
 
     if "estadisticas" in jugador:
