@@ -13,35 +13,8 @@ match platform.system():
 #lista_jugadores = dt.leer_json("dt.json","jugadores")
 
 while True:
-    lista_opciones = [
-        "Mostrar jugadores ",
-        "Mostrar estadisticas de un jugador y exportar a CSV",
-        "##Guardar estadisticas en CSV",
-        "",
-        "Mostrar el promedio de puntos por partido del equipo y mostrar el individual de cada jugador",
-        "Ingresar el nombre de un jugador y mostrar si ese jugador es miembro del Salón de la Fama del Baloncesto",
-        "Mostrar jugador con la mayor cantidad de rebotes totales",
-        "Mostrar el jugador con el mayor porcentaje de tiros de campo",
-        "Mostrar el jugador con la mayor cantidad de asistencias totales",
-        "Ingresar umbral y mostrar superadores de promedio de puntos por partido ",
-        "Ingresar umbral y mostrar superadores de promedio de rebotes ",
-        "Ingresar umbral y mostrar superadores de promedio de asistencias ",
-        "Mostrar el jugador con la mayor cantidad de robos totales",
-        "mostrar el jugador con la mayor cantidad de bloqueos totales",
-        "Ingresar umbral y mostrar superadores de porcentaje de tiros libres",
-        "Mostrar el promedio de puntos por partido del equipo excluyendo al jugador con la menor cantidad de puntos por partido",
-        "Mostrar el jugador con la mayor cantidad de logros obtenidos",
-        "Ingresar umbral y mostrar superadores de porcentaje de tiros triples ",
-        "Mostrar el jugador con la mayor cantidad temporadas jugadas",
-        "Ingresar umbral y mostrar superadores de porcentaje de tiros de campo por posicion",
-        "salir"]
 
-    for i in range(len(lista_opciones)) :
-        print("{0} - {1}".format(i+1, lista_opciones[i]))
-
-    opcion = dt.pedir_entero(mensaje_input = "Ingrese una opcion: ")
-
-    match opcion:
+    match dt.menu_dt():
         case 1:     #"Mostrar jugadores ",
             dt.mostrar_todos_nombre_dato(lista_jugadores, "posicion")
             pass

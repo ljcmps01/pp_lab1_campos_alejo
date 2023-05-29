@@ -641,6 +641,34 @@ def separar_por_posicion(lista_jugadores:list)->dict:
     return diccionario_posicion
     #---------------------------------Fin punto 20-------------------------------
 
+def menu_dt():
+    print(
+        "1 - Mostrar jugadores \
+        \n2 - Mostrar estadisticas de un jugador y exportar a CSV\
+        \n3 - Guardar estadisticas en CSV\
+        \n4 - buscar un jugador por su nombre y mostrar sus logros como campeonatos de la NBAparticipaciones en el All-Star y pertenencia al Salón de la Fama del Baloncesto\
+        \n5 - Mostrar el promedio de puntos por partido del equipo y mostrar el individual de cada jugador\
+        \n6 - Ingresar el nombre de un jugador y mostrar si ese jugador es miembro del Salón de la Fama del Baloncesto\
+        \n7 - Mostrar jugador con la mayor cantidad de rebotes totales\
+        \n8 - Mostrar el jugador con el mayor porcentaje de tiros de campo\
+        \n9 - Mostrar el jugador con la mayor cantidad de asistencias totales\
+        \n10 - Ingresar umbral y mostrar superadores de promedio de puntos por partido \
+        \n11 - Ingresar umbral y mostrar superadores de promedio de rebotes \
+        \n12 - Ingresar umbral y mostrar superadores de promedio de asistencias \
+        \n13 - Mostrar el jugador con la mayor cantidad de robos totales\
+        \n14 - mostrar el jugador con la mayor cantidad de bloqueos totales\
+        \n15 - Ingresar umbral y mostrar superadores de porcentaje de tiros libres\
+        \n16 - Mostrar el promedio de puntos por partido del equipo excluyendo al jugador con la menor cantidad de puntos por partido\
+        \n17 - Mostrar el jugador con la mayor cantidad de logros obtenidos\
+        \n18 - Ingresar umbral y mostrar superadores de porcentaje de tiros triples \
+        \n19 - Mostrar el jugador con la mayor cantidad temporadas jugadas\
+        \n20 - Ingresar umbral y mostrar superadores de porcentaje de tiros de campo por posicion\
+        \n21 - salir\n\n")
+
+
+    opcion = pedir_entero(mensaje_input = "Ingrese una opcion: ")
+    
+    return opcion
 
 lista_jugadores = leer_json("dt.json","jugadores")
 lista_jugadores = merge_all_estadisticas(lista_jugadores)
