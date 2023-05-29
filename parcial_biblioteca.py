@@ -296,7 +296,15 @@ def merge_estadisticas(jugador:dict)->dict:
 
     return aux_jugador
 
-def merge_all_estadisticas (lista_jugadores:list):
+def merge_all_estadisticas (lista_jugadores:list)->list:
+    """Extra el campo estadistica de todos los jugadores dentro de la lista pasada como parametro
+
+    Args:
+        lista_jugadores (list): lista de jugadores a extraer
+
+    Returns:
+        list: retorna la lista con las estadisticas extraidas
+    """
     aux_jugadores = list()
 
     for jugador in lista_jugadores:
@@ -306,6 +314,15 @@ def merge_all_estadisticas (lista_jugadores:list):
         
 
 def comparar_strings(primer_str:str,segunda_str:str)->bool:
+    """Recibe dos strings y compara si la primera es mayor que la segunda
+
+    Args:
+        primer_str (str): 
+        segunda_str (str): 
+
+    Returns:
+        bool: True si la primera es mayor que la segunda, False caso contrario
+    """
 
     primer_str_minuscula = primer_str.lower()
     segunda_str_minuscula = segunda_str.lower()
@@ -316,6 +333,17 @@ def comparar_numero(primer_numero, segundo_numero):
     return primer_numero > segundo_numero
 
 def burbujeo_jugadores(lista_jugadores:list,dato:str,orden_criterio:Callable,ascendiente = True)->list:    
+    """Realiza un ordenamiento tipo burbujeo sobre la lista de jugadores
+
+    Args:
+        lista_jugadores (list): lista de jugadores a ordenar
+        dato (str): campo sobre el cual comparar
+        orden_criterio (Callable): criterio a aplicar (comparar strings o numeros)
+        ascendiente (bool, optional): True si es orden ascendiente, False si es orden descendiente. Defaults to True.
+
+    Returns:
+        list: lista ordenada segun los parametros dados
+    """
     lista_ordenada = list(lista_jugadores)
     n = len(lista_ordenada)
 
@@ -344,9 +372,29 @@ def burbujeo_jugadores(lista_jugadores:list,dato:str,orden_criterio:Callable,asc
 #----------------------------Funciones umbral------------------------------------
 
 def comprobar_umbral(jugador:dict, dato:str, umbral)->bool:
+    """Comprueba si el jugador supera el umbral en el dato dado
+
+    Args:
+        jugador (dict): 
+        dato (str): 
+        umbral (_type_): 
+
+    Returns:
+        bool: True si lo supera, False si es menor o igual
+    """
     return (dato in jugador) and (type(jugador[dato]) in [float,int]) and (jugador[dato] > umbral)
 
 def obtener_superadores_umbral(lista_jugadores:dict, dato:str, umbral)->list:
+    """Obtiene una lista con los jugadores que superan el umbral dado en el campo pasado como parametro
+
+    Args:
+        lista_jugadores (dict): lista de jugadores a analizar
+        dato (str): campo a analizar
+        umbral (float,int): umbral a comparar
+
+    Returns:
+        list: lista con los jugadores que superan el umbral
+    """
     lista_superadores = list()
     for jugador in lista_jugadores:
         if dato in jugador and comprobar_umbral(jugador, dato, umbral):
@@ -354,6 +402,15 @@ def obtener_superadores_umbral(lista_jugadores:dict, dato:str, umbral)->list:
     return lista_superadores
 
 def pedir_umbral_y_obtener_superadores(lista_jugadores:list, dato:str)->list:
+    """Pide al usuario que ingrese un umbral y obtiene los jugadores que lo superan
+
+    Args:
+        lista_jugadores (list): lista de jugadores a analizar
+        dato (str): campo a analizar
+
+    Returns:
+        list: lista de jugadores que superan el umbral
+    """
     umbral = ingresar_float("Ingrese umbral de {0}: ".format(dato.replace("_"," ")))
     
     lista_superadores = obtener_superadores_umbral(lista_jugadores, dato, umbral)
@@ -367,6 +424,15 @@ def pedir_umbral_y_obtener_superadores(lista_jugadores:list, dato:str)->list:
 #--------------------------------Calcular promedio-----------------------------------
 
 def calcular_promedio_dato(lista_jugadores:list, dato:str)->float:
+    """Calcula el promedio con los jugadores dados y con el campo elegido
+
+    Args:
+        lista_jugadores (list): lista de jugadores a analizar
+        dato (str): campo a analizar
+
+    Returns:
+        float: valor promedio, retorna 0 si se pasa una lista vacia
+    """
     promedio = 0
     size = len(lista_jugadores)
     acumulador=0
@@ -385,12 +451,30 @@ def calcular_promedio_dato(lista_jugadores:list, dato:str)->float:
 #--------------------------------Re-Gex/Busqueda--------------------------------
 
 def buscar_patron(patron:str, entrada:str)->bool:
+    """Comprueba si la string dada como parametro cumple con el patron
+
+    Args:
+        patron (str): patron a buscar
+        entrada (str): string a analizar
+
+    Returns:
+        bool: True si hubo match, False caso contrario
+    """
     if re.findall(patron, entrada) != list():
         return True
     else:
         return False
     
 def buscar_jugador(lista_jugadores:list):
+    """Pide al usuario que ingrese un nombre a buscar, obtiene las coincidencias mas cercanas(minimo 3 caracteres)
+    Tambien permite buscar jugadores que comiencen con un caracter o un par, si y solo si el input es de ese largo
+
+    Args:
+        lista_jugadores (list): lista de jugadores a analizar
+
+    Returns:
+        list: lista de jugadores que matchearon con el input del usuario
+    """
     nombre_ingresado = input("Ingrese el nombre del jugador: ").lower()
     len_input = len(nombre_ingresado)
     lista_matches= []
@@ -408,7 +492,15 @@ def buscar_jugador(lista_jugadores:list):
     #----------------------------------------------------------------
 
 #------------------------------Punto 2 y 3----------------------------------
-def obtener_nombre_estadisticas_jugador(jugador:dict):
+def obtener_nombre_estadisticas_jugador(jugador:dict)->str:
+    """Obtiene todas las estadisticas de un jugador y las guarda en un string
+
+    Args:
+        jugador (dict): jugador a analizar
+
+    Returns:
+        str: string formateada con el nombre y sus estadisticas
+    """
     lista_estadisticas = ["{0}: {1}".format(capitalizar_palabras(dato.replace("_"," ")),\
         jugador[dato]) for dato in jugador if type(jugador[dato]) in [int,float]]
 
@@ -482,7 +574,15 @@ def pedir_nombre_y_comprobar_hof(lista_jugadores):
 
 
 
-def contar_logros_jugador(jugador)->dict:
+def contar_logros_jugador(jugador:dict)->dict:
+    """obtiene la cantidad de logros del jugador
+
+    Args:
+        jugador (dict): jugador a analizar
+
+    Returns:
+        dict: diccionario con el nombre y cantidad de logos
+    """
     jugador_logros = {"nombre": str(),"cantidad_logros":int()}
     nombre_jugador = obtener_nombre_capitalizado(jugador)
     acumulador_logros = 0
@@ -495,7 +595,15 @@ def contar_logros_jugador(jugador)->dict:
     
     return {"nombre": jugador["nombre"],"cantidad_logros": acumulador_logros}
 
-def obtener_todos_cantidad_logros(lista_jugadores):
+def obtener_todos_cantidad_logros(lista_jugadores:list)->list:
+    """Analiza toda la lista de jugadores y obtiene la cantidad de logros de todos los jugadores
+
+    Args:
+        lista_jugadores (list): lista de jugadores a analizar
+
+    Returns:
+        list: lista con los nombres y cantidad de logros de cada jugador
+    """
     lista_logros = list()
 
     for jugador in lista_jugadores:
@@ -512,6 +620,14 @@ def obtener_logros_maximo(lista_jugadores):
 
 #--------------------------------Punto 20--------------------------------
 def separar_por_posicion(lista_jugadores:list)->dict:
+    """Divide la lista de jugadores en distintos diccionarios segun su posicion
+
+    Args:
+        lista_jugadores (list): lista de jugadores a analizar
+
+    Returns:
+        dict: diccionario de listas con la posicion como llave y lista de los jugadores que poseen esa posicion  
+    """
     lista_ordenada = burbujeo_jugadores(lista_jugadores, "posicion", comparar_strings)
     posicion_actual = str()
     diccionario_posicion = dict()
