@@ -1,7 +1,13 @@
 """
-Unificar calculo de min y max utilizando un parametro opcional ascendiente=True  
-utilizar la logica:
-    if ascendiente is a>b:
+# Reorganizar por tipo de funcion 
+
+#Agregar funcion de menu principal
+
+#Documentar
+
+#Hacer bonus
+
+#Revisar funcion generar y guardar CSV (hacer mas generica y determinar una estructura sobre la que trabajar(lista de dict?))
 """
 import json
 import re
@@ -276,7 +282,7 @@ def obtener_mostrar_jugador_maximo(lista_jugadores, estadistica)->str:
 #--------------------------Punto 17--------------------------------------
 
 def buscar_patron(patron:str, entrada:str)->bool:
-    if re.search(patron, entrada):
+    if re.findall(patron, entrada) != list():
         return True
     else:
         return False
@@ -391,7 +397,7 @@ def pedir_umbral_y_obtener_superadores(lista_jugadores:list, dato:str)->list:
         print("No se encontraron jugadores que superen {0} {1} ".format(umbral, dato.replace("_", " ")).replace(" porcentaje","%"))
     
     return lista_superadores
-#--------------------------------Fin umbral--------------------------------------
+    #--------------------------------Fin umbral--------------------------------------
 
 #--------------------------------Punto 20--------------------------------
 def separar_por_posicion(lista_jugadores:list)->dict:
@@ -406,15 +412,62 @@ def separar_por_posicion(lista_jugadores:list)->dict:
             diccionario_posicion.update({posicion_actual:[jugador]})
         
     return diccionario_posicion
-#---------------------------------Fin punto 20-------------------------------
+    #---------------------------------Fin punto 20-------------------------------
 
 #--------------------------------Calcular promedio-----------------------------------
 
-# def calcular_promedio_dato(lista_jugadores:list, dato:str)->float:
-#     if 
+def calcular_promedio_dato(lista_jugadores:list, dato:str)->float:
+    promedio = 0
+    size = len(lista_jugadores)
+    acumulador=0
+
+
+    if size > 0:
+        for jugador in lista_jugadores:
+            if dato in jugador:
+                acumulador += jugador[dato]
+        promedio = acumulador / size
+
+    return promedio
 
 #--------------------------------Fin calculo promedio--------------------------------
 
+#--------------------------------Re-Gex/Busqueda--------------------------------
+
+def buscar_jugador(lista_jugadores:list):
+    nombre_ingresado = input("Ingrese el nombre del jugador: ").lower()
+    len_input = len(nombre_ingresado)
+    lista_matches= []
+    while len(nombre_ingresado) > 2 or (len_input < 3 and len(nombre_ingresado)>0):
+        for jugador in lista_jugadores:
+            if buscar_patron("^{0}.| {0}.".format(nombre_ingresado), jugador["nombre"].lower()):
+                lista_matches.append(jugador)
+
+        if len(lista_matches) > 0:
+            break
+        nombre_ingresado = nombre_ingresado[:-1]
+
+    return lista_matches
+
+    #----------------------------------------------------------------
+
+#-------------------------------Punto 6------------------------------
+def pertenece_hof(jugador:dict):
+    return "logros" in jugador and "Miembro del Salon de la Fama del Baloncesto" in jugador["logros"]
+
+def pedir_nombre_y_comprobar_hof(lista_jugadores):
+    lista_resultado_busqueda = buscar_jugador(lista_jugadores)
+
+    for jugador in lista_resultado_busqueda:
+        if pertenece_hof(jugador):
+            print("{0} pertenece al salon de la fama".format(jugador["nombre"]))
+        else:
+            print("{0} NO pertenece al salon de la fama".format(jugador["nombre"]))
+
+#--------------------------------Punto 4--------------------------------
+
+
 lista_jugadores = leer_json("dt.json","jugadores")
 lista_jugadores = merge_all_estadisticas(lista_jugadores)
-lista_jugadores = burbujeo_jugadores(lista_jugadores, "nombre", comparar_strings)
+
+# mostrar_todos_nombre_dato(buscar_jugador(lista_jugadores), "posicion")

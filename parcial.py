@@ -13,12 +13,13 @@ match platform.system():
 #lista_jugadores = dt.leer_json("dt.json","jugadores")
 
 while True:
-    lista_opciones = ["Mostrar jugadores ",
+    lista_opciones = [
+        "Mostrar jugadores ",
         "Mostrar estadisticas de un jugador y exportar a CSV",
         "##Guardar estadisticas en CSV",
         "",
-        "",
-        "",
+        "Mostrar el promedio de puntos por partido del equipo y mostrar el individual de cada jugador",
+        "Ingresar el nombre de un jugador y mostrar si ese jugador es miembro del Salón de la Fama del Baloncesto",
         "Mostrar jugador con la mayor cantidad de rebotes totales",
         "Mostrar el jugador con el mayor porcentaje de tiros de campo",
         "Mostrar el jugador con la mayor cantidad de asistencias totales",
@@ -28,7 +29,7 @@ while True:
         "Mostrar el jugador con la mayor cantidad de robos totales",
         "mostrar el jugador con la mayor cantidad de bloqueos totales",
         "Ingresar umbral y mostrar superadores de porcentaje de tiros libres",
-        "",
+        "Mostrar el promedio de puntos por partido del equipo excluyendo al jugador con la menor cantidad de puntos por partido",
         "Mostrar el jugador con la mayor cantidad de logros obtenidos",
         "Ingresar umbral y mostrar superadores de porcentaje de tiros triples ",
         "Mostrar el jugador con la mayor cantidad temporadas jugadas",
@@ -51,13 +52,20 @@ while True:
             dt.seleccionar_guardar_y_mostrar_estadisticas_jugador(lista_jugadores)
             pass
         case 4:
+            lista_matches = dt.buscar_jugador(lista_jugadores)
+            for jugador in lista_matches:
+                print("{0}\n{1}\n\n".format(dt.obtener_nombre_capitalizado(jugador), "\n".join(jugador["logros"])))
+            
+                
+        case 5:     #Mostrar el promedio de puntos por partido del equipo y mostrar el individual de cada jugador
+            lista_ordenada = dt.burbujeo_jugadores(lista_jugadores, "nombre", dt.comparar_strings)
+            
+            print("El promedio de puntos por partido es de {0} puntos".format(
+                dt.calcular_promedio_dato(lista_ordenada, "promedio_puntos_por_partido")))
 
             pass
-        case 5:
-
-            pass
-        case 6:
-
+        case 6:     #Ingresar el nombre de un jugador y mostrar si ese jugador es miembro del Salón de la Fama del Baloncesto
+            dt.pedir_nombre_y_comprobar_hof(lista_jugadores)
             pass
         case 7:     #Mostrar jugador con la mayor cantidad de rebotes totales
             print(dt.obtener_mostrar_jugador_maximo(lista_jugadores, "rebotes_totales"))
@@ -95,7 +103,12 @@ while True:
             lista_superadores = dt.pedir_umbral_y_obtener_superadores(lista_jugadores, "porcentaje_tiros_libres")
             dt.mostrar_todos_nombre_dato(lista_superadores, "porcentaje_tiros_libres",sufijo='%')
 
-        case 16:
+        case 16:    #Mostrar el promedio de puntos por partido del equipo excluyendo al jugador con la menor cantidad de puntos por partido
+            lista_ordenada = dt.burbujeo_jugadores(lista_jugadores, "promedio_puntos_por_partido", dt.comparar_numero, ascendiente=False)
+            lista_ordenada.pop()
+
+            print("Quitando el jugador con menor promedio, el promedio de puntos por partido es de {0} puntos".format(dt.calcular_promedio_dato(
+                lista_ordenada, "promedio_puntos_por_partido")))
             pass
         case 17:    #mostrar el jugador con la mayor cantidad de logros obtenidos
             print(dt.obtener_logros_maximo(lista_jugadores))
