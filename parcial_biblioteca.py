@@ -641,6 +641,105 @@ def separar_por_posicion(lista_jugadores:list)->dict:
     return diccionario_posicion
     #---------------------------------Fin punto 20-------------------------------
 
+#---------------------------------PUNTO EXTRA 23-------------------------------
+def obtener_lista_ranking_dato(lista_jugadores:list,dato:str)->int:
+    lista_ordenada = burbujeo_jugadores(lista_jugadores, dato, comparar_numero, ascendiente = False)
+    lista_ranking = list()
+    contador = 1
+    for jugador in lista_ordenada:
+        lista_ranking.append({"nombre": jugador["nombre"], 
+        dato.split("_")[0]:contador})
+        contador+=1
+    return lista_ranking
+
+def merge_diccionarios(jugador_a,jugador_b):
+    diccionario_fusionado = dict()
+
+    for campo_a,valor_a in jugador_a.items():
+        if not (campo_a in diccionario_fusionado.keys()):
+            diccionario_fusionado.update({campo_a: valor_a})
+    for campo_b,valor_b in jugador_b.items():
+        if not (campo_b in diccionario_fusionado.keys()):
+            diccionario_fusionado.update({campo_b: valor_b})
+    
+    return diccionario_fusionado
+
+def merge_lista_diccionarios(lista_a,lista_b,dato):
+    lista_fusionada = list()
+
+    for jugador_a in lista_a:
+        for jugador_b in lista_b:
+            if jugador_a[dato] == jugador_b[dato]:
+                lista_fusionada.append(merge_diccionarios(jugador_a, jugador_b))
+    
+    return lista_fusionada
+
+
+def lista_dict_a_csv(lista_jugadores):
+    str_csv = str() 
+    if len(lista_jugadores) > 0:
+        lista_header = list(lista_jugadores[0].keys())
+        str_csv += ",".join(lista_header)+"\n"
+
+        for jugador in lista_jugadores:
+            str_csv += ",".join([str(valor) for valor in jugador.values()])+"\n"
+
+    return str_csv
+
+def generar_lista_ranking(lista_jugadores,lista_campos):
+    lista_rankings = list()
+
+    for campo in lista_campos:
+        if lista_rankings == list():
+            lista_rankings=obtener_lista_ranking_dato(lista_jugadores, campo)
+        else:
+            lista_aux = obtener_lista_ranking_dato(lista_jugadores, campo)
+            lista_rankings = merge_lista_diccionarios(lista_rankings, lista_aux, "nombre")
+    
+    return lista_rankings 
+
+def guardar_csv_ranking(lista_jugadores, lista_campos, nombre_archivo = "lista_rankings"):
+    lista_rankings = generar_lista_ranking(lista_jugadores, lista_campos)
+    str_rankings = lista_dict_a_csv(lista_rankings)
+
+    if not (nombre_archivo.endswith(".csv")):
+        nombre_archivo+=".csv"
+
+    return guardar_archivo(nombre_archivo, str_rankings)
+
+    #---------------------------------FIN EXTRA 23-------------------------------
+
+
+#punto 4 extra
+
+def obtener_promedio_ranking(lista_jugadores,lista_campos):
+    lista_ranking=generar_lista_ranking(lista_jugadores, lista_campos)
+    lista_promedio_ranking = list()
+
+    for jugador in lista_ranking:
+        acum_ranking = 0
+        ranking_jugador=dict()
+        n_campos = 0
+
+        for campo,valor in jugador.items():
+            if type(valor) == str:
+                ranking_jugador.update({"nombre":valor})
+            else:
+                acum_ranking+=valor
+                n_campos+=1
+
+            if n_campos!=0:
+                ranking_jugador.update({"ranking_promedio":acum_ranking/n_campos})
+            else:
+                ranking_jugador.update({"ranking_promedio":0})
+        lista_promedio_ranking.append(ranking_jugador)
+
+    return lista_promedio_ranking
+    #punto 4 extra
+        
+
+
+
 def menu_dt():
     print(
         "1 - Mostrar jugadores \
@@ -663,6 +762,10 @@ def menu_dt():
         \n18 - Ingresar umbral y mostrar superadores de porcentaje de tiros triples \
         \n19 - Mostrar el jugador con la mayor cantidad temporadas jugadas\
         \n20 - Ingresar umbral y mostrar superadores de porcentaje de tiros de campo por posicion\
+        \n23 - Crear csv con los rankings de puntos, rebotes, asistencias y robos de cada jugador \
+        \n24 - Cantidad de jugadores por posicion\
+        \n26: #extra 3 - mostrar maximos de estadisticas formateados\
+        \n27: #extra 4 - mostrar jugador con mejores estadisticas promedio\
         \n21 - salir\n\n")
 
 
@@ -672,5 +775,6 @@ def menu_dt():
 
 lista_jugadores = leer_json("dt.json","jugadores")
 lista_jugadores = merge_all_estadisticas(lista_jugadores)
+
 
 # mostrar_todos_nombre_dato(buscar_jugador(lista_jugadores), "posicion")

@@ -104,8 +104,32 @@ while True:
 
         case 21:
             break
-        case 23:
-            pass
+        case 23: #Crear csv con los rankings de puntos, rebotes, asistencias y robos de cada jugador
+            dt.guardar_csv_ranking(lista_jugadores,["puntos_totales","rebotes_totales","asistencias_totales","robos_totales"])
+        
+        case 24: #extra 1 - imprimir cantidad de jugadores por posicion
+            for posicion,lista in dt.separar_por_posicion(lista_jugadores).items():
+                print("{0}: {1}".format(posicion.capitalize(),len(lista)))
+                pass
+        
+        case 26: #extra 3 - mostrar maximos de estadisticas formateados
+            for campo,valor in lista_jugadores[0].items():
+                if type(valor) in [int,float]:
+                    jugador_max = dt.calcular_max(lista_jugadores, campo)
+                    print ("Mayor cantidad {0}: {1} ({2})".format(
+                        campo.replace('_', ' '),
+                        jugador_max["nombre"],
+                        jugador_max[campo]))
+                    pass
+
+        case 27: #extra 4 - mostrar jugador con mejores estadisticas promedio
+            mejor_jugador = dt.calcular_max(dt.obtener_promedio_ranking(lista_jugadores, 
+                            [estadistica for estadistica,valor in lista_jugadores[0].items() if type(valor) in [int, float]]),
+                             "ranking_promedio",
+                             ascendiente=False)
+            print(dt.obtener_nombre_y_dato(mejor_jugador, "ranking_promedio"))
+            
+
         case _:
             print("Ingrese una opcion valida")
             pass
