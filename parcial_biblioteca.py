@@ -738,6 +738,38 @@ def obtener_promedio_ranking(lista_jugadores,lista_campos):
     #punto 4 extra
         
 
+#punto 2 extra
+
+def check_AS(jugador):
+    flag_AS = False
+    string_AS = str()
+    n_AS = 0
+    if "logros" in jugador:
+        for logro in jugador["logros"]:
+            if buscar_patron(".*All Star$", logro.replace("-", " ")):
+                flag_AS = True
+                string_AS = logro
+                break
+        if flag_AS:
+            n_AS = int(re.findall("^[0-9]+", string_AS)[0])
+    
+    return n_AS
+
+def obtener_AS_jugadores(lista_jugadores):
+    lista_cantidad_as = list()
+    for jugador in lista_jugadores:
+        lista_cantidad_as.append({"nombre": jugador["nombre"], "veces_all_star": check_AS(jugador)})
+    
+    return lista_cantidad_as
+
+def mostrar_cantidad_as_por_jugador(lista_jugadores):
+    lista_ordenada = burbujeo_jugadores(obtener_AS_jugadores(lista_jugadores), "veces_all_star", comparar_numero, ascendiente=False)
+
+    for jugador in lista_ordenada:
+        print("{0} ({1} veces All Star)".format(jugador["nombre"],jugador["veces_all_star"]))
+
+
+    #punto 2 extra
 
 
 def menu_dt():
@@ -776,5 +808,6 @@ def menu_dt():
 lista_jugadores = leer_json("dt.json","jugadores")
 lista_jugadores = merge_all_estadisticas(lista_jugadores)
 
+print(check_AS(lista_jugadores[-1]))
 
 # mostrar_todos_nombre_dato(buscar_jugador(lista_jugadores), "posicion")

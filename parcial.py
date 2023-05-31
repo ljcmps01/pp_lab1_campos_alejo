@@ -112,6 +112,9 @@ while True:
                 print("{0}: {1}".format(posicion.capitalize(),len(lista)))
                 pass
         
+        case 25: #extra 2 - mostrar cantidad de all star por jugador
+            dt.mostrar_cantidad_as_por_jugador(lista_jugadores)
+
         case 26: #extra 3 - mostrar maximos de estadisticas formateados
             for campo,valor in lista_jugadores[0].items():
                 if type(valor) in [int,float]:
